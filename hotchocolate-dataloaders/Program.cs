@@ -96,6 +96,3 @@ public class AuthorBatchDataLoader : BatchDataLoader<string, Author>
         return authors;
     }
 }
-
-
-
