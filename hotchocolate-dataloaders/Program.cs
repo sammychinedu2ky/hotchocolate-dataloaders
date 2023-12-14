@@ -67,8 +67,6 @@ public class Author
 
 public class ApplicationDbContext : DbContext
 {
-    public ILoggerFactory loggerFactory { get; set; }
-
     public DbSet<Author> Authors { get; set; }
     public ApplicationDbContext(DbContextOptions options) : base(options)
     {
