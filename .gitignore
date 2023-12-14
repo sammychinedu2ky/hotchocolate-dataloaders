@@ -1,0 +1,10 @@
+**/obj/*
+**/bin/*
+**/*.user
+**/*.suo
+**/*.cache
+**/*.dll
+**/*.exe
+**/*Properties
+**app.db
+**.vs
