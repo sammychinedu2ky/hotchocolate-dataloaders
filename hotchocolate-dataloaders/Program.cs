@@ -41,9 +41,9 @@ static void SeedDatabase(IApplicationBuilder app)
 public class Query
 {
     // uses the sweet data loader
-    public async Task<Author?> GetAuthor(string Id, AuthorBatchDataLoader batchLoader)
+    public async Task<Author?> GetAuthor(string Id, AuthorBatchDataLoader batchDataLoader)
     {
-        return await batchLoader.LoadAsync(Id);
+        return await batchDataLoader.LoadAsync(Id);
     }
     public async Task<Author?> GetAuthorWithoutBatchLoader(string Id, ApplicationDbContext context)
     {
