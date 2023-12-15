@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>((sp, opt) =>
@@ -9,11 +8,10 @@ builder.Services.AddDbContext<ApplicationDbContext>((sp, opt) =>
 
 builder.Services
     .AddGraphQLServer()
-    .RegisterDbContext<ApplicationDbContext>(DbContextKind.Resolver)
+    .RegisterDbContext<ApplicationDbContext>()
     .AddQueryType<Query>().AddProjections();
 
 var app = builder.Build();
-
 
 SeedDatabase(app);
 
@@ -42,6 +40,7 @@ static void SeedDatabase(IApplicationBuilder app)
 
 public class Query
 {
+    // uses the sweet data loader
     public async Task<Author?> GetAuthor(string Id, AuthorBatchDataLoader batchLoader)
     {
         return await batchLoader.LoadAsync(Id);
@@ -59,7 +58,6 @@ public class Query
 public class Author
 {
     public string Id { get; set; } = Guid.NewGuid().ToString();
-    [Required(ErrorMessage = "Name is required.")]
     public required string Name { get; set; }
 }
 
@@ -79,9 +77,8 @@ public class AuthorBatchDataLoader : BatchDataLoader<string, Author>
 
     public AuthorBatchDataLoader(
         ApplicationDbContext context,
-        IBatchScheduler batchScheduler,
-        DataLoaderOptions? options = null)
-        : base(batchScheduler, options)
+        IBatchScheduler batchScheduler)
+        : base(batchScheduler)
     {
         this._context = context;
     }
@@ -90,7 +87,9 @@ public class AuthorBatchDataLoader : BatchDataLoader<string, Author>
         IReadOnlyList<string> keys,
         CancellationToken cancellationToken)
     {
-        var authors = await _context.Authors.Where(a => keys.Contains(a.Id)).ToDictionaryAsync(a => a.Id, cancellationToken);
+        var authors = await _context.Authors
+            .Where(a => keys.Contains(a.Id))
+            .ToDictionaryAsync(a => a.Id, cancellationToken);
         return authors;
     }
 }
